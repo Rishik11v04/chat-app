@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "src": "/api/:path*",
+      "use": "https://chatapp-backend-wine.vercel.app/api/:path*"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
