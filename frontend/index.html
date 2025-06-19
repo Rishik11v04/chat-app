@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0e0e0e;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #e85151;
+            color: white;
+            padding: 10px;
+            margin: 0;
+        }
+
+        /* Chat container */
+        .chatcontent {
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Chat bubbles */
+        .chatcontent li {
+            background: #161515;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 20px;
+            max-width: 60%;
+            word-wrap: break-word;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .chatcontent li.received {
+            background-color: #535151;
+            align-self: flex-start;
+            color: white;
+        }
+
+        .chatcontent li.sent {
+            background: linear-gradient(rgb(239, 31, 139),rgb(154, 56, 240));
+            align-self: flex-end;
+        }
+
+        /* Fixed input section */
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background: rgb(17, 16, 16);
+            border-top: 1px solid #151414;
+            position: sticky;
+            top: 100%;
+            z-index: 1;
+        }
+
+        /* Input box styling */
+        .textinput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        /* Send button */
+        button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <h1>wanna talk with me!?</h1>
+
+    <div>
+        <ul class="chatcontent"></ul>
+    </div>
+    
+    
+
+    <div class="input-container">
+        <input type="text" placeholder="type here.." class="textinput">
+        <button onclick="messagesent()">send</button>
+    </div>
+    
+
+    
+<script>
+
+  const socket = io("http://localhost:3500");
+
+  let message=document.querySelector('.textinput');
+  let listmsg=document.querySelector('.chatcontent');
+  function messagesent(){
+    data=message.value;
+    console.log(data);
+
+    if(data.trim()!==''){
+        socket.emit('chat msg',{id:socket.id, text:data});
+        message.value='';
+    }
+
+  }
+
+    socket.on('chat msg',(msg)=>{
+        const item=document.createElement('li')
+        item.textContent=msg.text;
+
+        if(socket.id===msg.id){
+            item.classList.add('sent');
+        }
+        else{
+            item.classList.add('received');
+        }
+
+        listmsg.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    })
+
+</script>
+</body>
+</html>
